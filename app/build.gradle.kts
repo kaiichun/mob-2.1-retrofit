@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
     id("androidx.navigation.safeargs.kotlin")
+    id("kotlin-kapt")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -19,12 +21,17 @@ android {
     }
 
     buildTypes {
+        debug {
+            buildConfigField("String","BASE_URL","\"https://jsonplaceholder.typicode.com\"")
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            buildConfigField("String","BASE_URL","\"realapi\"")
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {
@@ -36,6 +43,7 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 }
 
@@ -53,4 +61,16 @@ dependencies {
     implementation("androidx.navigation:navigation-fragment-ktx:$navigation_version")
     implementation("androidx.navigation:navigation-ui-ktx:$navigation_version")
     implementation("androidx.fragment:fragment-ktx:1.8.1")
+
+    val retrofit2_version = "2.11.0"
+    implementation("com.squareup.retrofit2:retrofit:$retrofit2_version")
+    implementation("com.squareup.retrofit2:converter-gson:$retrofit2_version")
+
+    val dagger_version = "2.51.1"
+    implementation("com.google.dagger:hilt-android:$dagger_version")
+    kapt("com.google.dagger:hilt-android-compiler:$dagger_version")
+}
+
+kapt {
+    correctErrorTypes = true
 }
